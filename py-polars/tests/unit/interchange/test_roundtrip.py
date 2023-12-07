@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 import pandas as pd
 import pyarrow as pa
 import pyarrow.interchange
@@ -52,6 +54,10 @@ def test_roundtrip_pyarrow_zero_copy_parametric(df: pl.DataFrame) -> None:
 
 
 @given(dataframes(allowed_dtypes=protocol_dtypes))
+@pytest.mark.skipif(
+    sys.version_info < (3, 9),
+    reason="The correct `from_dataframe` implementation for pandas is not available before Python 3.9",
+)
 @pytest.mark.filterwarnings(
     "ignore:.*PEP3118 format string that does not match its itemsize:RuntimeWarning"
 )
@@ -68,6 +74,10 @@ def test_roundtrip_pandas_parametric(df: pl.DataFrame) -> None:
         excluded_dtypes=[pl.Categorical],
         chunked=False,
     )
+)
+@pytest.mark.skipif(
+    sys.version_info < (3, 9),
+    reason="The correct `from_dataframe` implementation for pandas is not available before Python 3.9",
 )
 @pytest.mark.filterwarnings(
     "ignore:.*PEP3118 format string that does not match its itemsize:RuntimeWarning"
